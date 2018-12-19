@@ -66,7 +66,7 @@ setGeneric("hasClosedBelow",
 
 setMethod("hasClosedBelow","TwoCandleSticks",
           function(object){
-            if(object@day2@close<object@day1@close)T else F
+            if(object@day2@close<object@day1@open)T else F
           }
 )
 
