@@ -34,18 +34,44 @@ holdings<-merge(comb_data,StockMix,by.x=c("SYMBOL"),by.y=c("SYMBOL"),all=F)
 # 
 
 
+nrow <- 50
+df_out <- data.table(
+  "Stock_Symbol" = as.character(),
+  "Pattern" = as.character(),
+  "Date" = as.character(),
+  "Buy_sell" = as.numeric(),
+  "Price" = as.numeric(),
+  "Stoploss" = as.numeric(),
+  "Target" = as.numeric(),
+  "Target_1" = as.numeric(),
+  "Target_2" = as.numeric(),
+  "Remarks" = as.numeric(),
+  stringsAsFactors = FALSE
+)[1:nrow]
+
 ##Bearish Engulfing
-rbindlist(lapply(1:nrow(holdings), function(i){
+lapply(1:nrow(holdings), function(i){
   test<-holdings[i]
-#  print(test$SYMBOL)
+  #  print(test$SYMBOL)
   twoCandles<-new("TwoCandleSticks",
-              day1=new("StockProperties",open=test$OPEN.LastDay,close=test$CLOSE.LastDay,high=test$HIGH.LastDay,low=test$LOW.LastDay,volume=test$TOTTRDQTY.LastDay),
-              day2=new("StockProperties",open=test$OPEN.today,close=test$CLOSE.today,high=test$HIGH.today,low=test$LOW.today,volume=test$TOTTRDQTY.today)
+                  day1=new("StockProperties",open=test$OPEN.LastDay,close=test$CLOSE.LastDay,high=test$HIGH.LastDay,low=test$LOW.LastDay,volume=test$TOTTRDQTY.LastDay),
+                  day2=new("StockProperties",open=test$OPEN.today,close=test$CLOSE.today,high=test$HIGH.today,low=test$LOW.today,volume=test$TOTTRDQTY.today)
   )
   #twoCandles->Trade
-  if(Bullish_Engilfing(twoCandles))list((paste0("Pattern Confirmed-Bearish Engulfing for ",test$SYMBOL)))
-  
-}))
+  if(Bullish_Engilfing(twoCandles))
+  df_out$Stock_Symbol[i] <- test$SYMBOL
+  df_out$Pattern[i] <- "Bearish Engulfing"
+  df_out$Date[i] <- test$TIMESTAMP.today
+  df_out$Buy_sell[i] <- "Sell"
+  df_out$Price[i] <- test$CLOSE.today
+  df_out$Stoploss[i] <- max(test$HIGH.today,test$HIGH.LastDay)
+  df_out$Target[i] <- abs(df_out$Price[i] - df_out$Stoploss[i])
+  df_out$Target_1[i] <- test$CLOSE.today - (df_out$Target[i])
+  df_out$Target_2[i] <- test$CLOSE.today - (2*df_out$Target[i])
+  #list((paste0("Pattern Confirmed-Bearish Engulfing for ",test$SYMBOL)))
+  return(df_out)
+}
+)
 
 
 
