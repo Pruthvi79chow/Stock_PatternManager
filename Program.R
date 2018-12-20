@@ -58,7 +58,7 @@ lapply(1:nrow(holdings), function(i){
                   day2=new("StockProperties",open=test$OPEN.today,close=test$CLOSE.today,high=test$HIGH.today,low=test$LOW.today,volume=test$TOTTRDQTY.today)
   )
   #twoCandles->Trade
-  if(Bullish_Engilfing(twoCandles))
+  if(Bearish_Engulfing(twoCandles))
   df_out$Stock_Symbol[i] <- test$SYMBOL
   df_out$Pattern[i] <- "Bearish Engulfing"
   df_out$Date[i] <- test$TIMESTAMP.today
