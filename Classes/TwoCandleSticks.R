@@ -81,7 +81,53 @@ setMethod("hasClosedAbove","TwoCandleSticks",
           }
 )
 
+setGeneric("hasClosedBelow50",
+           def=function(object){standardGeneric("hasClosedBelow50")}
+)
 
+
+setMethod("hasClosedBelow50","TwoCandleSticks",
+          function(object){
+            if(object@day2@close < 
+               (object@day1@open + (0.5*(object@day1@close-object@day1@open))))T else F
+          }
+)
+
+setGeneric("Tweezertop",
+           def=function(object){standardGeneric("Tweezertop")}
+)
+
+
+setMethod("Tweezertop","TwoCandleSticks",
+          function(object){
+            if((max(object@day1@open,object@day1@high,object@day1@close) == max(object@day2@open,object@day2@high,object@day2@close) |
+                max(object@day2@open,object@day2@high,object@day2@close) == max(object@day1@open,object@day1@high,object@day1@close)))T else F
+          }
+)
+
+setGeneric("hasClosedAbove50",
+           def=function(object){standardGeneric("hasClosedAbove50")}
+)
+
+
+setMethod("hasClosedAbove50","TwoCandleSticks",
+          function(object){
+            if(object@day2@close > 
+               (object@day1@close + (0.5*(object@day1@open-object@day1@close))))T else F
+          }
+)
+
+setGeneric("Tweezerbottom",
+           def=function(object){standardGeneric("Tweezerbottom")}
+)
+
+
+setMethod("Tweezerbottom","TwoCandleSticks",
+          function(object){
+            if((min(object@day1@open,object@day1@low,object@day1@close) == min(object@day2@open,object@day2@low,object@day2@close) |
+                min(object@day2@open,object@day2@low,object@day2@close) == min(object@day1@open,object@day1@low,object@day1@close)))T else F
+          }
+)
 
 # Double<-new("TwoCandleSticks",
 #             day1=new("StockProperties",open=test$OPEN.LastDay,close=test$CLOSE.LastDay,high=test$HIGH.LastDay,low=test$LOW.LastDay,volume=test$TOTTRDQTY.LastDay),

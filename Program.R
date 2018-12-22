@@ -64,9 +64,22 @@ rbindlist(lapply(1:nrow(holdings), function(i){
    }else if(Bearish_Harami(twoCandles)){
      target<- getTarget(twoCandles,"Bearish_Harami")
      return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Bearish_Harami",target)))
-  }
-}))
-
-
-
-
+   }else if(Dark_Cloud(twoCandles)){
+     target<- getTarget(twoCandles,"Dark_Cloud")
+     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Dark_Cloud",target)))
+   }else if(Tweezer_Top(twoCandles)){
+     target<- getTarget(twoCandles,"Tweezer_Top")
+     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Tweezer_Top",target)))
+   }else if(Bullish_Engulfing(twoCandles)){
+     target<- getTarget(twoCandles,"Bullish_Engulfing")
+     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Bullish_Engulfing",target)))
+   }else if(Bullish_Harami(twoCandles)){
+     target<- getTarget(twoCandles,"Bullish_Harami")
+     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Bullish_Harami",target)))
+   }else if(Bullish_Piercing(twoCandles)){
+     target<- getTarget(twoCandles,"Bullish_Piercing")
+     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Bullish_Piercing",target)))
+   }else if(Tweezer_Bottom(twoCandles)){
+     target<- getTarget(twoCandles,"Tweezer_Bottom")
+     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Tweezer_Bottom",target)))       
+}}))
