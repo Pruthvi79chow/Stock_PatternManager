@@ -50,7 +50,7 @@ df_out <- data.table(
 )[1:nrow]
 
 ##Bearish Engulfing
-lapply(1:nrow(holdings), function(i){
+rbindlist(lapply(1:nrow(holdings), function(i){
   test<-holdings[i]
   #  print(test$SYMBOL)
   twoCandles<-new("TwoCandleSticks",
@@ -58,43 +58,15 @@ lapply(1:nrow(holdings), function(i){
                   day2=new("StockProperties",open=test$OPEN.today,close=test$CLOSE.today,high=test$HIGH.today,low=test$LOW.today,volume=test$TOTTRDQTY.today)
   )
   #twoCandles->Trade
-  if(Bearish_Engulfing(twoCandles))
-  df_out$Stock_Symbol[i] <- test$SYMBOL
-  df_out$Pattern[i] <- "Bearish Engulfing"
-  df_out$Date[i] <- test$TIMESTAMP.today
-  df_out$Buy_sell[i] <- "Sell"
-  df_out$Price[i] <- test$CLOSE.today
-  df_out$Stoploss[i] <- max(test$HIGH.today,test$HIGH.LastDay)
-  df_out$Target[i] <- abs(df_out$Price[i] - df_out$Stoploss[i])
-  df_out$Target_1[i] <- test$CLOSE.today - (df_out$Target[i])
-  df_out$Target_2[i] <- test$CLOSE.today - (2*df_out$Target[i])
-  #list((paste0("Pattern Confirmed-Bearish Engulfing for ",test$SYMBOL)))
-  return(df_out)
-}
-)
+   if(Bearish_Engulfing(twoCandles)) {
+    target<- getTarget(twoCandles,"Bearish_Engulfing")
+    return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Bearish_Engulfing",target)))
+   }else if(Bearish_Harami(twoCandles)){
+     target<- getTarget(twoCandles,"Bearish_Harami")
+     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Bearish_Harami",target)))
+  }
+}))
 
-
-
-
-# rbindlist(lapply(1:nrow(holdings), function(i){
-#   test<-holdings[i]
-#   debug=F
-#   if(test$CLOSE.LastDay>test$OPEN.LastDay){
-#     if(debug)print("Day1 is Green")
-#     if(test$OPEN.today>test$CLOSE.LastDay){
-#       if(debug)  print("Day2 has a gap up opening")
-#     #  if(abs(test$OPEN.today-test$CLOSE.today)>abs(test$CLOSE.LastDay-test$OPEN.LastDay)){
-#       if(test$CLOSE.today<test$OPEN.LastDay){
-#         if(debug) print("Day2 closed below Day1")
-#         if(test$TOTTRDQTY.today>test$TOTTRDQTY.LastDay){
-#           if(debug) print("Day2 Volume is higher the Day1")
-#          list((paste0("Pattern Confirmed-Bearish Engulfing for ",test$SYMBOL)))
-#         
-#       }
-#     }
-#     }
-#   }
-# }))
 
 
 

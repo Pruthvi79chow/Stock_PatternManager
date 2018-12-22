@@ -77,7 +77,7 @@ setGeneric("hasClosedAbove",
 
 setMethod("hasClosedAbove","TwoCandleSticks",
           function(object){
-            if(object@day2@close>object@day1@close)T else F
+            if(object@day2@close>object@day1@open)T else F
           }
 )
 
@@ -96,4 +96,5 @@ setMethod("hasClosedAbove","TwoCandleSticks",
 # hasVolumeDown(Double)
 # hasClosedAbove(Double)
 # hasClosedBelow(Double)
+
 
