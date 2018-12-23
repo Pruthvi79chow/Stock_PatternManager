@@ -1,17 +1,18 @@
 ### Code to Find patterns in Stock
 
+PackageList<-c("data.table","crayon","httr")
+# Install CRAN packages (if not already installed)
+.inst <- PackageList %in% installed.packages()
+if(length(PackageList[!.inst]) > 0) install.packages(PackageList[!.inst])
 
-require(data.table)
-require(crayon)
-library(httr)
-
+# Load packages into session 
+sapply(PackageList, require, character.only=TRUE)
 
 lapply(list.files("./Modules/",full.names = T), source,echo=F)
 lapply(list.files("./Classes/",full.names = T), source,echo=F)
 
 StockMix<-fread(file.path("./MetaData/Master_List_Equity.csv"),stringsAsFactors = F,na.strings=c(""," ","NA"))
 StockMix<-StockMix[!is.na(Category)]
-
 
 NSE<-GetNSEData()
 NSE$Exchange<-"NSE"
@@ -32,22 +33,6 @@ holdings<-merge(comb_data,StockMix,by.x=c("SYMBOL"),by.y=c("SYMBOL"),all=F)
 # test<-comb_data[SYMBOL=="YESBANK"]
 # data<-merge(holdings,holdings_PDay,by="SYMBOL")
 # 
-
-
-nrow <- 50
-df_out <- data.table(
-  "Stock_Symbol" = as.character(),
-  "Pattern" = as.character(),
-  "Date" = as.character(),
-  "Buy_sell" = as.numeric(),
-  "Price" = as.numeric(),
-  "Stoploss" = as.numeric(),
-  "Target" = as.numeric(),
-  "Target_1" = as.numeric(),
-  "Target_2" = as.numeric(),
-  "Remarks" = as.numeric(),
-  stringsAsFactors = FALSE
-)[1:nrow]
 
 ##Bearish Engulfing
 rbindlist(lapply(1:nrow(holdings), function(i){
