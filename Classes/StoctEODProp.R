@@ -13,9 +13,15 @@ setClass("StockProperties",
 setMethod("show", "StockProperties",
            function(object){
              if(object@open>object@close){
-               cat("OpenPrice=",green(object@open))
-             }else{
-               cat("OpenPrice=",red(object@open))
+                 cat("OpenPrice=",green(object@open))
+                 cat(" ClosePrice=",green(object@close))
+                 cat(" HighPrice=",green(object@high))
+                 cat(" LowPrice=",green(object@low))
+               }else{
+                 cat("OpenPrice=",red(object@open))
+                 cat(" ClosePrice=",red(object@close))
+                 cat(" HighPrice=",red(object@high))
+                 cat(" LowPrice=",red(object@low))
              }
            }
           )

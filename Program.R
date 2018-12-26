@@ -1,17 +1,18 @@
 ### Code to Find patterns in Stock
 
+PackageList<-c("data.table","crayon","httr")
+# Install CRAN packages (if not already installed)
+.inst <- PackageList %in% installed.packages()
+if(length(PackageList[!.inst]) > 0) install.packages(PackageList[!.inst])
 
-require(data.table)
-require(crayon)
-library(httr)
-
+# Load packages into session 
+sapply(PackageList, require, character.only=TRUE)
 
 lapply(list.files("./Modules/",full.names = T), source,echo=F)
 lapply(list.files("./Classes/",full.names = T), source,echo=F)
 
 StockMix<-fread(file.path("./MetaData/Master_List_Equity.csv"),stringsAsFactors = F,na.strings=c(""," ","NA"))
 StockMix<-StockMix[!is.na(Category)]
-
 
 NSE<-GetNSEData()
 NSE$Exchange<-"NSE"
@@ -33,42 +34,37 @@ holdings<-merge(comb_data,StockMix,by.x=c("SYMBOL"),by.y=c("SYMBOL"),all=F)
 # data<-merge(holdings,holdings_PDay,by="SYMBOL")
 # 
 
-
 ##Bearish Engulfing
 rbindlist(lapply(1:nrow(holdings), function(i){
   test<-holdings[i]
-#  print(test$SYMBOL)
+  #  print(test$SYMBOL)
   twoCandles<-new("TwoCandleSticks",
-              day1=new("StockProperties",open=test$OPEN.LastDay,close=test$CLOSE.LastDay,high=test$HIGH.LastDay,low=test$LOW.LastDay,volume=test$TOTTRDQTY.LastDay),
-              day2=new("StockProperties",open=test$OPEN.today,close=test$CLOSE.today,high=test$HIGH.today,low=test$LOW.today,volume=test$TOTTRDQTY.today)
+                  day1=new("StockProperties",open=test$OPEN.LastDay,close=test$CLOSE.LastDay,high=test$HIGH.LastDay,low=test$LOW.LastDay,volume=test$TOTTRDQTY.LastDay),
+                  day2=new("StockProperties",open=test$OPEN.today,close=test$CLOSE.today,high=test$HIGH.today,low=test$LOW.today,volume=test$TOTTRDQTY.today)
   )
   #twoCandles->Trade
-  if(Bullish_Engilfing(twoCandles))list((paste0("Pattern Confirmed-Bearish Engulfing for ",test$SYMBOL)))
-  
-}))
-
-
-
-
-# rbindlist(lapply(1:nrow(holdings), function(i){
-#   test<-holdings[i]
-#   debug=F
-#   if(test$CLOSE.LastDay>test$OPEN.LastDay){
-#     if(debug)print("Day1 is Green")
-#     if(test$OPEN.today>test$CLOSE.LastDay){
-#       if(debug)  print("Day2 has a gap up opening")
-#     #  if(abs(test$OPEN.today-test$CLOSE.today)>abs(test$CLOSE.LastDay-test$OPEN.LastDay)){
-#       if(test$CLOSE.today<test$OPEN.LastDay){
-#         if(debug) print("Day2 closed below Day1")
-#         if(test$TOTTRDQTY.today>test$TOTTRDQTY.LastDay){
-#           if(debug) print("Day2 Volume is higher the Day1")
-#          list((paste0("Pattern Confirmed-Bearish Engulfing for ",test$SYMBOL)))
-#         
-#       }
-#     }
-#     }
-#   }
-# }))
-
-
-
+   if(Bearish_Engulfing(twoCandles)) {
+    target<- getTarget(twoCandles,"Bearish_Engulfing")
+    return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Bearish_Engulfing",target)))
+   }else if(Bearish_Harami(twoCandles)){
+     target<- getTarget(twoCandles,"Bearish_Harami")
+     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Bearish_Harami",target)))
+   }else if(Dark_Cloud(twoCandles)){
+     target<- getTarget(twoCandles,"Dark_Cloud")
+     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Dark_Cloud",target)))
+   }else if(Tweezer_Top(twoCandles)){
+     target<- getTarget(twoCandles,"Tweezer_Top")
+     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Tweezer_Top",target)))
+   }else if(Bullish_Engulfing(twoCandles)){
+     target<- getTarget(twoCandles,"Bullish_Engulfing")
+     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Bullish_Engulfing",target)))
+   }else if(Bullish_Harami(twoCandles)){
+     target<- getTarget(twoCandles,"Bullish_Harami")
+     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Bullish_Harami",target)))
+   }else if(Bullish_Piercing(twoCandles)){
+     target<- getTarget(twoCandles,"Bullish_Piercing")
+     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Bullish_Piercing",target)))
+   }else if(Tweezer_Bottom(twoCandles)){
+     target<- getTarget(twoCandles,"Tweezer_Bottom")
+     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Tweezer_Bottom",target)))       
+}}))
