@@ -25,6 +25,28 @@ GetNSEData<-function(days=0){
   return(data)
 }
 
+GetNSEDatabyDate<-function(Date){
+  Dateformat=as.Date(Date,format="%Y-%m-%d")
+  DateNSEformat<-toupper(format(Dateformat,"%d%b%Y"))
+    month<-toupper(gsub('[[:digit:]]+', '', DateNSEformat))
+    year<-year(Dateformat)
+    BuildLink<-paste0("https://www.nseindia.com/content/historical/EQUITIES/",year,"/",month,"/cm",DateNSEformat,"bhav.csv.zip")
+    print(BuildLink)
+    if(!http_error(BuildLink)){
+      temp <- tempfile()
+      d<-GET(BuildLink,
+          user_agent("Mozilla/5.0"), write_disk("cm24SEP2014bhav.csv.zip",overwrite=T))
+     # download.file(BuildLink,temp,quiet=TRUE)
+      data <- as.data.table(read.table(unz(d$content[1], paste0("cm",DateNSEformat,"bhav.csv")),sep = ",",header=T,stringsAsFactors = F))
+      unlink(temp)
+      return(data)
+    }else{
+      return(NULL)
+    }
+}
+
+
+
 GetLastActiveTradeDay<-function(){
   i<-0
   d<-1
