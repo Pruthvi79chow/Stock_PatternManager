@@ -83,12 +83,12 @@ stopCluster(cl)
 
 numWorkers=detectCores(all.tests = T, logical = T)
 cl<-makeCluster(getOption("cl.cores", numWorkers-1))
-clusterExport(cl=cl, varlist=c("uniqueStockdata","NarrowRange1","stock_data","getTrueRange","getAverageTrueRange"), envir=environment())
+clusterExport(cl=cl, varlist=c("uniqueStockdata","NarrowRange_1DayTraget","stock_data","getTrueRange","getAverageTrueRange"), envir=environment())
 NR_BackTesting<-rbindlist(parLapply(cl,scripts, function(i){
   require(data.table)
   if(i %in% uniqueStockdata){
     scriptData<-stock_data[Stock==i]
-    NRdata<-NarrowRange_1DayTraget(scriptData,7,14,backTesting = T,F)
+    NRdata<-NarrowRange_1DayTraget(scriptData,7,14,backTesting = F,F)
   }else{
     return(NULL)
   }
@@ -98,7 +98,7 @@ stopCluster(cl)
 barplot(dd[,-c("successRatio")],beside = TRUE)
 
 fwrite(combinedData,"./NR4_axis_wPatterns.csv")
-fwrite(dd_7day,"./NR7_calls_day1Targetcounts.csv")
+fwrite(NR_BackTesting,"./NR4_calls_day_10_01_2019.csv")
 
 scripts[scripts %in% unique(stock_data$Stock)]
 

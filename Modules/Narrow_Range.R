@@ -1,11 +1,11 @@
 
 #
 # 
-# NarrowRange(stockdata<-stock_data[Stock=="ICICIBANK"],
-# NRDays<-4,
-# ATRDays<-8,
-# Debug=T,
-# backTesting=T)
+NarrowRange_1DayTraget(stockdata<-stock_data[Stock=="ICICIBANK"],
+NRDays<-4,
+ATRDays<-8,
+Debug=T,
+backTesting=F)
 
 NarrowRange<-function(stockdata,NRDays,ATRDays,backTesting=F,Debug=F){
   require(data.table)
@@ -174,15 +174,18 @@ NarrowRange_1DayTraget<-function(stockdata,NRDays,ATRDays,backTesting=F,Debug=F)
     sellsuccessCount<-0
     sellfailedCount<-0
     ## Decide trade Call and calculate achived Targers
-    for(i in 1:(nrow(data)-1)){
+    for(i in 2:(nrow(data)-1)){
+      previousDay<-data[i-1]
       today<-data[i]
       nextDay<-data[i+1]
       
         reward = today$ATR
         risk = today$high - today$low
         RR = reward/risk
+        
+        harami<-if(today$high<previousDay$high & today$low>previousDay$low) T else F
       
-      if(today$isNR & RR>1.6){
+      if(today$isNR & RR>1.6 & harami){
         tradecall<-if(nextDay$high>today$high) "BUY" else if(nextDay$low<today$low) "SELL" else "NOTRIGGER"
         targetReached<-if(tradecall=="BUY"){
           if(nextDay$low<today$low){ ##1 # Stop loss hit
@@ -242,29 +245,34 @@ NarrowRange_1DayTraget<-function(stockdata,NRDays,ATRDays,backTesting=F,Debug=F)
                        "BuySuccessPct"=round(sellsuccessCount*100/sum(calls[tradecall=="SELL"]$N),2)
     )
     
-    # stats<- data.table("Stock"=data$Stock[1],"totalNRSignals"=sum(calls$N),
-    #                    "BuySignals"=sum(calls[tradecall=="BUY"]$N),"BuyTargetReached"=hits[tradecall=="BUY"]$V1,
-    #                    "BuysuccessPct"=round(hits[tradecall=="BUY"]$V1*100/calls[tradecall=="BUY"]$N,2),
-    #                    "BuysuccessRatio"=round(calls[tradecall=="BUY"]$N/sum(hits[tradecall=="BUY"]$V1),2),
-    #                    "SellSignals"=sum(calls[tradecall=="SELL"]$N),"SellTargetReached"=hits[tradecall=="SELL"]$V1,
-    #                    "SellSuccessPct"=round(hits[tradecall=="SELL"]$V1*100/calls[tradecall=="SELL"]$N,2),
-    #                    "SellSuccessRatio"=round(calls[tradecall=="SELL"]$N/hits[tradecall=="SELL"]$V1,2)
-    # )
-    # hits<-data[isNR==T, hits := rleid(targetRatio),by="tradecall"]
     if(Debug)
       return(list(data,stats))
     else
       return(stats)
   }else{
     isNRday<-tail(data$isNR,1)
+    
     if(isNRday){
-      # if(!Debug) data<-data[,  -grep("V", colnames(data)),with=F]
       NRrow<-tail(data,1)
-      stats<-data.table(NRrow,
-                        "BuyTrigger"=NRrow$high,"BuySL"=NRrow$low,
-                        "SellTrigger"=NRrow$low,"SellSL"=NRrow$high
-      )
-      return(stats)
+      previousDay<-tail(data,2)[1]
+      
+      reward = NRrow$ATR
+      risk = NRrow$high - NRrow$low
+      RR = reward/risk
+      
+      harami<-if(NRrow$high<previousDay$high & NRrow$low>previousDay$low) T else F
+      
+      if(harami & RR>1.6){
+        # if(!Debug) data<-data[,  -grep("V", colnames(data)),with=F]
+        NRrow<-tail(data,1)
+        stats<-data.table(NRrow,
+                          "BuyTrigger"=NRrow$high,"BuySL"=NRrow$low,
+                          "SellTrigger"=NRrow$low,"SellSL"=NRrow$high
+        )
+        return(stats)
+      }else{
+        return(NULL)
+      }
     }else{
       return(NULL)
     }
