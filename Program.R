@@ -1,6 +1,6 @@
 ### Code to Find patterns in Stock
 
-PackageList<-c("data.table","crayon","httr")
+PackageList<-c("data.table","crayon","httr","parallel")
 # Install CRAN packages (if not already installed)
 .inst <- PackageList %in% installed.packages()
 if(length(PackageList[!.inst]) > 0) install.packages(PackageList[!.inst])
@@ -40,21 +40,65 @@ completeFNOlist<-c("BANKNIFTY","NIFTY","NIFTYIT","NIFTYMID50","ACC","ADANIENT","
 
 
 
-scripts<-sort(toupper(FNOlist))
+scripts<-sort(toupper(completeFNOlist))
 uniqueStockdata<-unique(stock_data$Stock)
-dd<-rbindlist(lapply(scripts, function(i){
+numWorkers=detectCores(all.tests = T, logical = T)
+cl<-makeCluster(getOption("cl.cores", numWorkers-1))
+clusterExport(cl=cl, varlist=c("uniqueStockdata","NarrowRange","stock_data","getTrueRange","getAverageTrueRange"), envir=environment())
+i<-"AXISBANK"
+NR_wOtherPatterns<-rbindlist(parLapply(cl,scripts, function(i){
+  
   if(i %in% uniqueStockdata){
-    print(i)
-    return(NarrowRange(stock_data[Stock==i],4,8,backTesting = T,F))
+   scriptData<-stock_data[Stock==i]
+    NRdata<-NarrowRange(scriptData,4,8,backTesting = T,T)[[1]]
+    
+    patterns<-rbindlist(lapply(2:(nrow(scriptData)), function(j){
+      day1<-scriptData[j-1]
+      day2<-scriptData[j]
+      twoCandles<-new("TwoCandleSticks",
+                      day1=new("StockProperties",open=day1$open,close=day1$close,high=day1$high,low=day1$low,volume=day1$volume),
+                      day2=new("StockProperties",open=day2$open,close=day2$close,high=day2$high,low=day2$low,volume=day2$volume)
+      )
+      data.table("Stock"=day2$Stock,
+                 "Date"=day2$Date,
+                 "Bearish_Engulfing"  =Bearish_Engulfing(twoCandles),
+                 "Bearish_Harami"     =Bearish_Harami(twoCandles),
+                 "Bullish_Engulfing"  =Bullish_Engulfing(twoCandles),
+                 "Bullish_Harami"     =Bullish_Harami(twoCandles),
+                 "Bullish_Piercing"   =Bullish_Piercing(twoCandles),
+                 "Dark_Cloud"         =Dark_Cloud(twoCandles),
+                 "Tweezer_Bottom"     =Tweezer_Bottom(twoCandles),
+                 "Tweezer_Top"        =Tweezer_Top(twoCandles)
+                 )
+    }))
+    
+    combinedData<-merge(NRdata,patterns,by=c("Stock","Date"),all=F)
+    
   }else{
     return(NULL)
   }
 }))
+stopCluster(cl)
+
+
+numWorkers=detectCores(all.tests = T, logical = T)
+cl<-makeCluster(getOption("cl.cores", numWorkers-1))
+clusterExport(cl=cl, varlist=c("uniqueStockdata","NarrowRange1","stock_data","getTrueRange","getAverageTrueRange"), envir=environment())
+NR_BackTesting<-rbindlist(parLapply(cl,scripts, function(i){
+  require(data.table)
+  if(i %in% uniqueStockdata){
+    scriptData<-stock_data[Stock==i]
+    NRdata<-NarrowRange_1DayTraget(scriptData,7,14,backTesting = T,F)
+  }else{
+    return(NULL)
+  }
+}))
+stopCluster(cl)
 
 barplot(dd[,-c("successRatio")],beside = TRUE)
 
-fwrite(data,"./NR4_axis_Calc.csv")
-fwrite(dd,"./tommorowNR7_calls_FNOList_31122018.csv")
+fwrite(combinedData,"./NR4_axis_wPatterns.csv")
+fwrite(dd_7day,"./NR7_calls_day1Targetcounts.csv")
 
 scripts[scripts %in% unique(stock_data$Stock)]
 

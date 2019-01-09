@@ -12,7 +12,7 @@ readNSEBhavCopy.EQ<-function(path,
       pattern = paste0(".", pattern),
       full.names = T
     )
-  df <- rbindlist(lapply(files.list, fread , sep2 = "auto" , header = F))
+  df <- rbindlist(lapply(files.list, fread , sep2 = "auto" , header = F,fill=T))
   combine_df <-setNames(df,c("Stock", "Date", "open", "high", "low", "close", "volume"))
   # combine_df <- combine_df %>% filter(!grepl("(-II|-III)", Future))
   combine_df<-combine_df[,':='(Date=convert_strtodate(Date),
