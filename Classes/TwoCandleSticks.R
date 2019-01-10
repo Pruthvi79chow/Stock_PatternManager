@@ -121,7 +121,7 @@ setGeneric("Tweezertop",
 setMethod("Tweezertop","TwoCandleSticks",
           function(object){
             if(max(object@day1@open,object@day1@high,object@day1@close) == 
-                max(object@day2@open,object@day2@high,object@day2@close)))T else F
+                max(object@day2@open,object@day2@high,object@day2@close))T else F
           }
 )
 
@@ -145,7 +145,7 @@ setGeneric("Tweezerbottom",
 setMethod("Tweezerbottom","TwoCandleSticks",
           function(object){
             if(min(object@day1@open,object@day1@low,object@day1@close) == 
-                min(object@day2@open,object@day2@low,object@day2@close)))T else F
+                min(object@day2@open,object@day2@low,object@day2@close))T else F
           }
 )
 

@@ -40,7 +40,7 @@ completeFNOlist<-c("BANKNIFTY","NIFTY","NIFTYIT","NIFTYMID50","ACC","ADANIENT","
 
 
 
-scripts<-sort(toupper(completeFNOlist))
+scripts<-sort(toupper(FNOlist))
 uniqueStockdata<-unique(stock_data$Stock)
 numWorkers=detectCores(all.tests = T, logical = T)
 cl<-makeCluster(getOption("cl.cores", numWorkers-1))
@@ -80,7 +80,7 @@ NR_wOtherPatterns<-rbindlist(parLapply(cl,scripts, function(i){
 }))
 stopCluster(cl)
 
-
+updateNSEfolder("./MetaData/NSE/")
 numWorkers=detectCores(all.tests = T, logical = T)
 cl<-makeCluster(getOption("cl.cores", numWorkers-1))
 clusterExport(cl=cl, varlist=c("uniqueStockdata","NarrowRange_1DayTraget","stock_data","getTrueRange","getAverageTrueRange"), envir=environment())
@@ -88,7 +88,7 @@ NR_BackTesting<-rbindlist(parLapply(cl,scripts, function(i){
   require(data.table)
   if(i %in% uniqueStockdata){
     scriptData<-stock_data[Stock==i]
-    NRdata<-NarrowRange_1DayTraget(scriptData,7,14,backTesting = F,F)
+    NRdata<-NarrowRange_1DayTraget(scriptData,4,8,backTesting = F,F)
   }else{
     return(NULL)
   }
