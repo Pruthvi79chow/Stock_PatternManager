@@ -57,5 +57,17 @@ rbindlist(lapply(1:nrow(holdings), function(i){
   }else if(Tweezer_Bottom(twoCandles)){
     target<- getTarget(twoCandles,"Tweezer_Bottom")
     return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Tweezer_Bottom",target)))       
+  }else if(Hammer(twoCandles)){
+    target<- getTarget(twoCandles,"Hammer")
+    return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Hammer",target)))   
+  }else if(Hangingman(twoCandles)){
+    target<- getTarget(twoCandles,"Hangingman")
+    return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Hangingman",target)))   
+  }else if(Inverted_Hammer(twoCandles)){
+    target<- getTarget(twoCandles,"Inverted_Hammer")
+    return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Inverted_Hammer",target)))   
+  }else if(Shooting_star(twoCandles)){
+    target<- getTarget(twoCandles,"Shooting_star")
+    return(data.table(cbind("stock"=test$SYMBOL,"tradeDate"=test$TIMESTAMP.today,"pattern"="Shooting_star",target)))   
   }}))
 }

@@ -7,7 +7,9 @@ getTarget <- function(Trade, Pattern) {
   if (Pattern == "Bearish_Engulfing" |
       Pattern == "Bearish_Harami" |
       Pattern == "Dark_Cloud" |
-      Pattern == "Tweezer_Top") {
+      Pattern == "Tweezer_Top" |
+      Pattern == "Hangingman" |
+      Pattern == "Shooting_star") {
     #  Date <- Trade@day2TIMESTAMP.today
     tradeCall <- "Sell"
     Price <- Trade@day2@close
@@ -15,12 +17,14 @@ getTarget <- function(Trade, Pattern) {
     Target <- abs(Price - Stoploss)
     Target_1 <- Trade@day2@close - Target
     Target_2 <- Trade@day2@close - (2 * Target)
-    Remarks <- "Look for this pattern near Resistance only"
+    Remarks <- "Check at Resistance only"
   }
   if(Pattern == "Bullish_Engulfing" |
      Pattern == "Bullish_Harami" |
      Pattern == "Bullish_Piercing" |
-     Pattern == "Tweezer_Bottom"){
+     Pattern == "Tweezer_Bottom" |
+     Pattern == "Hammer"|
+     Pattern == "Inverted_Hammer"){
     #  Date <- Trade@day2TIMESTAMP.today
     tradeCall <- "Buy"
     Price <- Trade@day2@close
@@ -28,7 +32,7 @@ getTarget <- function(Trade, Pattern) {
     Target <- abs(Price - Stoploss)
     Target_1 <- Trade@day2@close + Target
     Target_2 <- Trade@day2@close + (2*Target)
-    Remarks <- "Look for this pattern near Support only"
+    Remarks <- "Check at Support only"
   }
   return(data.table(
     tradeCall,

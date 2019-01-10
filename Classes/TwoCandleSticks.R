@@ -66,7 +66,17 @@ setGeneric("hasClosedBelow",
 
 setMethod("hasClosedBelow","TwoCandleSticks",
           function(object){
-            if(object@day2@close<object@day1@open)T else F
+            if(IsBullish(object@day1)){
+              if(IsBullish(object@day2) & object@day2@open<object@day1@open) T
+               else if (IsBearish(object@day2) & object@day2@close<object@day1@open) T 
+                else F
+            }else if(IsBearish(object@day1)){
+              if(IsBullish(object@day2) & object@day2@open<object@day1@close) T
+              else if (IsBearish(object@day2) & object@day2@close<object@day1@close) T 
+              else F
+            }else{
+              F
+            } 
           }
 )
 
@@ -77,7 +87,17 @@ setGeneric("hasClosedAbove",
 
 setMethod("hasClosedAbove","TwoCandleSticks",
           function(object){
-            if(object@day2@close>object@day1@open)T else F
+            if(IsBullish(object@day1)){
+              if(IsBullish(object@day2) & object@day2@close>object@day1@close) T
+              else if (IsBearish(object@day2) & object@day2@open>object@day1@close) T 
+              else F
+            }else if(IsBearish(object@day1)){
+              if(IsBullish(object@day2) & object@day2@close>object@day1@open) T
+              else if (IsBearish(object@day2) & object@day2@open>object@day1@open) T 
+              else F
+            }else{
+              F
+            } 
           }
 )
 
@@ -129,6 +149,16 @@ setMethod("Tweezerbottom","TwoCandleSticks",
           }
 )
 
+setGeneric("lowwixlength",
+           def=function(object){standardGeneric("lowwixlength")}
+)
+
+setMethod("lowwixlength","TwoCandleSticks",
+          function(object){
+            if((min(object@day1@open,object@day1@close) - object@day1@low) 
+               > (2 * abs(object@day1@open - object@day1@close))) T else F
+          }
+)
 # Double<-new("TwoCandleSticks",
 #             day1=new("StockProperties",open=test$OPEN.LastDay,close=test$CLOSE.LastDay,high=test$HIGH.LastDay,low=test$LOW.LastDay,volume=test$TOTTRDQTY.LastDay),
 #             day2=new("StockProperties",open=test$OPEN.today,close=test$CLOSE.today,high=test$HIGH.today,low=test$LOW.today,volume=test$TOTTRDQTY.today)
