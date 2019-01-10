@@ -109,7 +109,7 @@ setGeneric("hasClosedBelow50",
 setMethod("hasClosedBelow50","TwoCandleSticks",
           function(object){
             if(object@day2@close < 
-               (object@day1@open + (0.5*(object@day1@close-object@day1@open))))T else F
+               (object@day1@open + (0.5*(RealBody(object@day1)))))T else F
           }
 )
 
@@ -120,8 +120,8 @@ setGeneric("Tweezertop",
 
 setMethod("Tweezertop","TwoCandleSticks",
           function(object){
-            if((max(object@day1@open,object@day1@high,object@day1@close) == max(object@day2@open,object@day2@high,object@day2@close) |
-                max(object@day2@open,object@day2@high,object@day2@close) == max(object@day1@open,object@day1@high,object@day1@close)))T else F
+            if(max(object@day1@open,object@day1@high,object@day1@close) == 
+                max(object@day2@open,object@day2@high,object@day2@close)))T else F
           }
 )
 
@@ -133,7 +133,7 @@ setGeneric("hasClosedAbove50",
 setMethod("hasClosedAbove50","TwoCandleSticks",
           function(object){
             if(object@day2@close > 
-               (object@day1@close + (0.5*(object@day1@open-object@day1@close))))T else F
+               (object@day1@close + (0.5*(RealBody(object@day1)))))T else F
           }
 )
 
@@ -144,8 +144,8 @@ setGeneric("Tweezerbottom",
 
 setMethod("Tweezerbottom","TwoCandleSticks",
           function(object){
-            if((min(object@day1@open,object@day1@low,object@day1@close) == min(object@day2@open,object@day2@low,object@day2@close) |
-                min(object@day2@open,object@day2@low,object@day2@close) == min(object@day1@open,object@day1@low,object@day1@close)))T else F
+            if(min(object@day1@open,object@day1@low,object@day1@close) == 
+                min(object@day2@open,object@day2@low,object@day2@close)))T else F
           }
 )
 

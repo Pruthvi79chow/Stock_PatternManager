@@ -1,11 +1,11 @@
 
 #
 # 
-NarrowRange_1DayTraget(stockdata<-stock_data[Stock=="ICICIBANK"],
-NRDays<-4,
-ATRDays<-8,
-Debug=T,
-backTesting=F)
+# NarrowRange_1DayTraget(stockdata<-stock_data[Stock=="ICICIBANK"],
+# NRDays<-4,
+# ATRDays<-8,
+# Debug=T,
+# backTesting=F)
 
 NarrowRange<-function(stockdata,NRDays,ATRDays,backTesting=F,Debug=F){
   require(data.table)
