@@ -18,8 +18,10 @@ stock_data <- readNSEBhavCopy.EQ(NSEEODpath)
 ## Pattern finder
 todaysCall<-getPatternList()
 
+FNOtrade <- todaysCall[stock %in% FNOlist]
+
 FNOlist<-c("TataSteel", "Tatamotors", "SBIN", "ITC", "ICICIBANK", "AXISBANK", "HDFCBANK", "YESBANK", "INFY", "PCJEWELLER", "DHFL", 
-           "RELIANCE", "ONGC", "DABUR", "HINDUNILVR", "VEDL", "HINDALCO", "BHARTIARTL", "ADANIENT", "SUNPHARMA", "MARUTI")
+           "RELIANCE", "ONGC", "DABUR", "HINDUNILVR", "VEDL", "HINDALCO", "BHARTIARTL", "ADANIENT", "SUNPHARMA", "MARUTI", "BANKBARODA")
 
 
 completeFNOlist<-c("BANKNIFTY","NIFTY","NIFTYIT","NIFTYMID50","ACC","ADANIENT","ADANIPORTS","ADANIPOWER","AJANTPHARM","ALBK","AMARAJABAT","AMBUJACEM","APOLLOHOSP",
@@ -38,9 +40,7 @@ completeFNOlist<-c("BANKNIFTY","NIFTY","NIFTYIT","NIFTYMID50","ACC","ADANIENT","
              "TORNTPHARM","TORNTPOWER","TV18BRDCST","TVSMOTOR","UBL","UJJIVAN","ULTRACEMCO","UNIONBANK","UPL","VEDL","VGUARD","VOLTAS","WIPRO","WOCKPHARMA",
              "YESBANK","ZEEL")
 
-
-
-scripts<-sort(toupper(FNOlist))
+scripts<-sort(toupper(completeFNOlist))
 uniqueStockdata<-unique(stock_data$Stock)
 numWorkers=detectCores(all.tests = T, logical = T)
 cl<-makeCluster(getOption("cl.cores", numWorkers-1))
@@ -98,7 +98,7 @@ stopCluster(cl)
 barplot(dd[,-c("successRatio")],beside = TRUE)
 
 fwrite(combinedData,"./NR4_axis_wPatterns.csv")
-fwrite(NR_BackTesting,"./NR4_calls_day_10_01_2019.csv")
+fwrite(NR_BackTesting,"./NR4_Backtesting_till_07_02_2019.csv")
 
 scripts[scripts %in% unique(stock_data$Stock)]
 
